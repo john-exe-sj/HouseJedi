@@ -13,7 +13,7 @@ class Message(Model):
 agent = Agent(
     name="Bob", 
     seed="backend_seed", 
-    endpoint=["http://127.0.0.8001"], 
+    endpoint=["http://localhost:8001/submit"], 
     port=8001, 
     mailbox=os.getenv("AGENT_KEY_BACKEND_MAILBOX")
 )
@@ -26,9 +26,10 @@ async def introduce_agent(ctx: Context):
     # Print a greeting message with the agent's name and its address
     print(f"Hello, I'm agent, my address is {ctx.agent.address}.")
 
-@agent.on_interval(period=2)
-async def send_message(ctx: Context): 
-    await ctx.send(FRONT_END_ADDR, message=Message(message="HI FROM THE BACK"))
+#@agent.on_interval(period=2)
+#async def send_message(ctx: Context): 
+#    await ctx.send(FRONT_END_ADDR, message=Message(message="HI FROM THE BACK"))
+
 # Run the agent only when the script is executed directly
 if __name__ == "__main__":
     agent.run()
