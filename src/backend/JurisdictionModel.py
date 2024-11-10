@@ -7,9 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Message(Model): 
-    message: str
+     jurisdictions: list[str]
  
-# Create an agent named alice
 agent = Agent(
     name="Bob", 
     seed="backend_seed", 
@@ -26,9 +25,11 @@ async def introduce_agent(ctx: Context):
     # Print a greeting message with the agent's name and its address
     print(f"Hello, I'm agent, my address is {ctx.agent.address}.")
 
-#@agent.on_interval(period=2)
-#async def send_message(ctx: Context): 
-#    await ctx.send(FRONT_END_ADDR, message=Message(message="HI FROM THE BACK"))
+@agent.on_message(model=Message)
+async def handle_message(ctx:Context, sender:str, message: Message): 
+    ctx.logger.info(f"Recieved message: {message.jurisdictions}")
+    #TODO: Based on this list of jurisdictions, we compile documents from our filesystem or database. 
+    # Parse through those files and return a list of codes with their descriptions or return the list of file-paths
 
 # Run the agent only when the script is executed directly
 if __name__ == "__main__":

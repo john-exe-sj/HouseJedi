@@ -34,21 +34,38 @@ async def introduce_agent(ctx: Context):
 
 
 class Request(Model):
-    text: str
+    chatbox_prompt: str | None
+    jurisdictions: list[str] | None
 
 class Response(Model):
     timestamp: int
-    text: str
-    agent_address: str
+    answer: str | None
+    codes: dict[str, str] | None
+
+class Message(Model): 
+     jurisdictions: list[str]
 
 @agent.on_rest_post("/rest/post", Request, Response)
 async def handle_post(ctx: Context, req: Request) -> Response:
     ctx.logger.info("Received POST request")
-    request_json = json.loads(req)
-    ctx.logger.info(request_json)
+    ctx.logger.info(req)
+    await ctx.send(BACK_END_ADDR, message=Message(jurisdictions=req.jurisdictions))
     # TODO: Reformat this and have it come from the JurisdictionModel.py
     return Response(
-        text=f"Received: {req.text}",
+        timestamp=int(time.time()),
+        answer=f"Received: {req.jurisdictions}", 
+        codes=dict(),
+    )
+
+@agent.on_rest_post("/rest/chatbox/prompt", Request, Response)
+async def handle_post(ctx: Context, req: Request) -> Response:
+    ctx.logger.info("Received POST request")
+    ctx.logger.info(req)
+    
+    answer = await llm.ainvoke(req.text)
+    # TODO: Reformat this and have it come from the JurisdictionModel.py
+    return Response(
+        text=f"Received: {req.text}, response:{answer}",
         agent_address=ctx.agent.address,
         timestamp=int(time.time()),
     )
