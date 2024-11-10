@@ -13,7 +13,7 @@ load_dotenv()
 llm = OllamaLLM(model=os.getenv('LLM_MODEL_NAME'))
 
 class Message(Model):
-    message: str
+    jurisdictions: str
  
 # Create an agent named alice
 agent = Agent(
@@ -30,7 +30,7 @@ BACK_END_ADDR = "agent1q2wpcnltmzkckcg07cyyv080zge2vczecyx64df7hlj7x2uryvmcsjaag
 @agent.on_event("startup")
 async def introduce_agent(ctx: Context):
     # Print a greeting message with the agent's name and its address
-    print(f"Hello, I'm agent {ctx.agent.name} and my address is {agent.address}.")
+    await ctx.send(BACK_END_ADDR, message=Message(jurisdictions=["Daly City", "East Palo Alto", "Campbell"]))
 
 
 class Request(Model):
